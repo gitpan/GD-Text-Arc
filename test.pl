@@ -44,7 +44,7 @@ is( $ta->get('radius'), $radius,          "  radius");
 is( $ta->get('center_x'), $centerX,       "  center_x");
 is( $ta->get('center_y'), $centerY,       "  center_y");
 is( $ta->get('text'), $text,              "  text");
-is( $ta->get('orientation'), 'clockwise', " orientation");
+is( $ta->get('orientation'), 'clockwise', "  orientation");
 is( $ta->get('align'), 'left',            "  align");
 is( $ta->get('angle'), 1,                 "  angle 1");
 
@@ -112,4 +112,27 @@ is( $ta->get('font'), $boldfont,                 "  still: set_font");
 $ta->set_text($text);
 is( $ta->get('text'), $text,                     "  text");
 
-isnt ($ta->get_widths(), $ta->get('width'),      "  get_widths is different from get('width')");
+# round 5: true color image (without parameters)
+# testing that color is set to (0,0,1)...
+
+$image = GD::Image->new(600,500,1);
+
+$white = $image->colorAllocate(255,255,255);
+$gray =  $image->colorAllocate(75,75,75);
+
+$ta = GD::Text::Arc->new($image);
+
+ok( defined $ta,                     "new() returned something");
+isa_ok( $ta, "GD::Text::Arc");
+isnt( $ta->draw,0,                        "  draw returned FALSE");
+is( $ta->get('colour'), 1,            "  colour");
+is( $ta->get('color'), 1,             "  color");
+is( $ta->get('ptsize'), 10,               "  ptsize");
+is( $ta->get('font'), "",                 "  font");
+is( $ta->get('radius'), 250,              "  radius");
+is( $ta->get('center_x'), 300,            "  center_x");
+is( $ta->get('center_y'), 250,            "  center_y");
+is( $ta->get('text'), "",                 "  text");
+is( $ta->get('orientation'), 'clockwise', " orientation");
+is( $ta->get('align'), 'left',            "  align");
+is( $ta->get('angle'), 0,                 "  angle 1");

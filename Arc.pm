@@ -1,16 +1,13 @@
 package GD::Text::Arc;
 
-$GD::Text::Arc::VERSION = '0.01';
+$GD::Text::Arc::VERSION = '0.02';
 
 use strict;
 use GD 1.2;    # fails if version < 1.20 (no TrueType support)
-use GD::Text;
+use base qw(GD::Text);
 use Carp;
 
 use constant PI   => 4 * atan2(1, 1);
-
-@GD::Text::Arc::ISA = qw(GD::Text);
-
 
 sub new
 {
@@ -21,9 +18,10 @@ sub new
         or croak "Not a GD::Image object";
     my $self = $class->SUPER::new() or return;
     $self->{gd} = $gd;
+    bless $self => $class;
     $self->_init();
     $self->set(@_);
-    bless $self => $class;
+    return $self;
 }
 
 # fill these in with defaults
@@ -47,7 +45,8 @@ sub _init
     {
         $self->{$k} = $v;
     }
-    $self->{colour}   = $self->{gd}->colorsTotal - 1,
+    $self->{colour}   = 1; # if indexed, 1 is the first non-background color. 
+                           # if truecolor, (0,0,1) is nearly black.
     $self->{color}    = $self->{colour};
     $self->{center_x} = ($self->{gd}->getBounds())[0] / 2;
     $self->{center_y} = ($self->{gd}->getBounds())[1] / 2;
@@ -208,7 +207,7 @@ sub draw
     #    thetaL = thetaN - (1/2 radWidth * orientation)
     #
     # where:
-    #                   angles are measured from 0-o'clock, positive 
+    #                   angles are measured from 12-o'clock, positive 
     #                      increasing clockwise.
     #
     #    thetaN       = the angle of the letter to calculate its position.
@@ -378,9 +377,10 @@ The font to use and the point size. Also see C<set_font()>.
 =item colour, color
 
 Synonyms. The colour to use to draw the string. This should be the index
-of the colour in the GD::Image object's palette. The default value is
-the last colour in the GD object's palette at the time of the creation
-of C<$gd_text>.
+of the colour in the GD::Image object's palette. For a true-color GD::Image,
+the default value is nearly black: (0,0,1).  For indexed images, the default 
+value is the first non-background colour in the GD object's palette at the 
+time of the creation of C<$gd_text>.
 
 =item center_x, center_y
 
